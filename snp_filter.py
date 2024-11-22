@@ -20,7 +20,8 @@ def process_vcf(vcf_file):
             ref, alt, pos = columns[3], columns[4], columns[1]
 
             match = re.search(r"([\d,\.]+%)", columns[9])
-            freq = float(match.group(1).strip('%').replace(',', '.')) if match else None
+            freq = float(match.group(1).strip('%').replace(',', '.')) \
+                if match else None
 
             data["Position"].append(pos)
             data["Ref"].append(ref)
@@ -43,18 +44,24 @@ def vcf_to_table(vcf_file1, vcf_file2) -> float:
     df_roommate = process_vcf(vcf_file1)
     df_reference = process_vcf(vcf_file2)
 
-    mean_freq_ref, std_freq_ref, threshold_high = calculate_thresholds(df_reference)
+    mean_freq_ref, std_freq_ref, threshold = \
+        calculate_thresholds(df_reference)
 
-    filtered_df = df_roommate[(df_roommate['Freq'] > threshold_high) & (df_roommate['Freq'] < 90)]
+    filtered_df = df_roommate[
+        (df_roommate['Freq'] > threshold) & (df_roommate['Freq'] < 90)
+        ]
     return filtered_df, mean_freq_ref, std_freq_ref
 
+
 filenames = []
-print("Write filename of experiment sample and then filenames for control samples (empty string to complete): ")
+print("Write filename of experiment sample and then filenames for control samples "
+      "(empty string to complete): ")
+
 while True:
-    file = input()
-    if file == "":
+    name = input()
+    if name == "":
         break
-    filenames.append(file)
+    filenames.append(name)
 
 filename = filenames[0]
 reference_files = filenames[1:]
@@ -73,7 +80,9 @@ combined_filtered = pd.concat(all_filtered_values, ignore_index=True)
 mean_std = sum(stds_ref) / len(stds_ref)
 mean_mean = sum(means_ref) / len(means_ref)
 
-filtered_above_mean_std = combined_filtered[combined_filtered['Freq'] > 3 * mean_std].drop_duplicates()
+filtered_above_mean_std = combined_filtered[
+    combined_filtered['Freq'] > 3 * mean_std
+].drop_duplicates()
 
 print("\nFiltered values that exceed the mean of std deviations:")
 print(filtered_above_mean_std)
@@ -82,4 +91,5 @@ print("\nSummary of Means and Standard Deviations:")
 for i, ref_file in enumerate(reference_files):
     print(f"{ref_file}: Mean = {means_ref[i]:.4f}, Std = {stds_ref[i]:.4f}")
 
-print(f"\nMean = {mean_mean:.4f}, Std = {mean_std:.4f} \nMean + Std * 3 = {mean_mean + (mean_std * 3):.4f}")
+print(f"\nMean = {mean_mean:.4f}, Std = {mean_std:.4f} \
+      \nMean + Std * 3 = {mean_mean + (mean_std * 3):.4f}")
