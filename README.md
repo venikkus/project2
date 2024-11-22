@@ -345,3 +345,24 @@ VarScan60_results0001.vcf: Mean = 0.2267, Std = 0.0285
 Mean = 0.2346, Std = 0.0369 
 Mean + Std * 3 = 0.3454
 ```
+
+
+To see the mutation on the 3D model, you can use the PyMol programm
+
+Load molecule using 4-letter ID 6nsb.
+
+Create pretty colors
+```
+bg_color [0.129, 0.129, 0.129]
+set_color my_color, [0.545, 0.812, 0.004]
+color my_color, all
+```
+
+Highlight the mutation by coloring it red and turning it into a sphere
+```
+select res103, resi 103 and chain A
+color red, res103
+show spheres, res103
+```
+
+<img src="data/prot_1.png" width="1000">
